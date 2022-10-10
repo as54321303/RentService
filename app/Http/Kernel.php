@@ -69,5 +69,7 @@ class Kernel extends HttpKernel
         'OwnerAuth2' => \App\Http\Middleware\OwnerAuth2::class,
         'AdminAuth' => \App\Http\Middleware\AdminAuth::class,
         'AdminAuth2' => \App\Http\Middleware\AdminAuth2::class,
+        'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
+        'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
     ];
 }

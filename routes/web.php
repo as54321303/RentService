@@ -20,96 +20,6 @@ Route::get('/', function () {
 });
 
 
-// User Routes
-
-  Route::get('home',[UserController::class,'home']);
-
-  Route::get('product-detail/{id}',[UserController::class,'product_detail']);
-
-
-
-Route::group(['middleware'=>['UserAuth2']],function(){
-
-  Route::get('user-register',[UserController::class,'user_register']);
-  Route::post('post-user-register',[UserController::class,'post_user_register']);
-
-  Route::get('user-login',[UserController::class,'user_login']);
-  Route::post('post-user-login',[UserController::class,'post_user_login']);
-
-});
-
-Route::get('add-cart-session/{id}',[UserController::class,'add_cart_session']);
-
-Route::get('user-cart',[UserController::class,'user_cart']);
-
-Route::get('remove-item/{id}',[UserController::class,'remove_item']);
-
-
-Route::group(['middleware'=>['UserAuth']],function(){
-
-    Route::get('user-logout',[UserController::class,'user_logout']);
-
-    Route::get('add-cart/{id}',[UserController::class,'add_cart']);
-
-
-    Route::get('stripe', [UserController::class, 'stripe']);
-
-    Route::post('stripe', [UserController::class, 'stripePost'])->name('stripe.post');
-
-    Route::get('my-order',[UserController::class,'my_order']);
-    
-
-});
-
-
-
-
-
-
-
-
-
-// Machine Owner Routes
-
-Route::get('owner-register',[OwnerController::class,'owner_register']);
-Route::post('post-owner-register',[OwnerController::class,'post_owner_register']);
-
-Route::get('owner-login',[OwnerController::class,'owner_login']);
-Route::post('post-owner-login',[OwnerController::class,'post_owner_login']);
-
-
-Route::group(['middleware'=>['OwnerAuth2']],function(){
-
-  Route::get('owner-register',[OwnerController::class,'owner_register']);
-  Route::post('post-owner-register',[OwnerController::class,'post_owner_register']);
-
-  Route::get('owner-login',[OwnerController::class,'owner_login']);
-  Route::post('post-owner-login',[OwnerController::class,'post_owner_login']);
-
-});
-
-
-
-Route::group(['middleware'=>['OwnerAuth']],function(){
-
-  Route::get('owner-logout',[OwnerController::class,'owner_logout']);
-
-  Route::get('owner-dashboard',[OwnerController::class,'owner_dashboard']);
-
-  Route::get('products',[OwnerController::class,'products']);
-
-  Route::get('add-product',[OwnerController::class,'add_product']);
-
-  Route::post('post-add-product',[OwnerController::class,'post_add_product']);
-
-  Route::get('delete-product/{id}',[OwnerController::class,'delete_product']);
-
-  Route::post('update-product',[OwnerController::class,'update_product']);
-
-});
-
-
-
 
 // Admin Routes
 
@@ -129,4 +39,142 @@ Route::group(['middleware'=>['AdminAuth']],function(){
 
   Route::get('users',[AdminController::class,'users']);
 
+  Route::get('machine-category',[AdminController::class,'machine_category']);
+
+  Route::get('machines',[AdminController::class,'machines']);
+
+  Route::get('view-machine/{id}',[AdminController::class,'view_machine']);
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// User Routes
+
+//   Route::get('home',[UserController::class,'home']);
+
+//   Route::get('product-detail/{id}',[UserController::class,'product_detail']);
+
+
+
+// Route::group(['middleware'=>['UserAuth2']],function(){
+
+//   Route::get('user-register',[UserController::class,'user_register']);
+//   Route::post('post-user-register',[UserController::class,'post_user_register']);
+
+//   Route::get('user-login',[UserController::class,'user_login']);
+//   Route::post('post-user-login',[UserController::class,'post_user_login']);
+
+// });
+
+// Route::get('add-cart-session/{id}',[UserController::class,'add_cart_session']);
+
+// Route::get('user-cart',[UserController::class,'user_cart']);
+
+// Route::get('remove-item/{id}',[UserController::class,'remove_item']);
+
+
+// Route::group(['middleware'=>['UserAuth']],function(){
+
+//     Route::get('user-logout',[UserController::class,'user_logout']);
+
+//     Route::get('add-cart/{id}',[UserController::class,'add_cart']);
+
+
+//     Route::get('stripe', [UserController::class, 'stripe']);
+
+//     Route::post('stripe', [UserController::class, 'stripePost'])->name('stripe.post');
+
+//     Route::get('my-order',[UserController::class,'my_order']);
+    
+
+// });
+
+
+
+
+
+
+
+
+
+// Machine Owner Routes
+
+// Route::get('owner-register',[OwnerController::class,'owner_register']);
+// Route::post('post-owner-register',[OwnerController::class,'post_owner_register']);
+
+// Route::get('owner-login',[OwnerController::class,'owner_login']);
+// Route::post('post-owner-login',[OwnerController::class,'post_owner_login']);
+
+
+// Route::group(['middleware'=>['OwnerAuth2']],function(){
+
+//   Route::get('owner-register',[OwnerController::class,'owner_register']);
+//   Route::post('post-owner-register',[OwnerController::class,'post_owner_register']);
+
+//   Route::get('owner-login',[OwnerController::class,'owner_login']);
+//   Route::post('post-owner-login',[OwnerController::class,'post_owner_login']);
+
+// });
+
+
+
+// Route::group(['middleware'=>['OwnerAuth']],function(){
+
+//   Route::get('owner-logout',[OwnerController::class,'owner_logout']);
+
+//   Route::get('owner-dashboard',[OwnerController::class,'owner_dashboard']);
+
+//   Route::get('products',[OwnerController::class,'products']);
+
+//   Route::get('add-product',[OwnerController::class,'add_product']);
+
+//   Route::post('post-add-product',[OwnerController::class,'post_add_product']);
+
+//   Route::get('delete-product/{id}',[OwnerController::class,'delete_product']);
+
+//   Route::post('update-product',[OwnerController::class,'update_product']);
+
+
+// });
+
+
+
+
+
+
+// Route::get('get_id',function(){
+
+//   return view('play');
+// });
+
+// Route::get('{url}/{id_1}/{id_2}',[AdminController::class,'play']);

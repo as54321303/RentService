@@ -59,6 +59,24 @@
             </li>
 
           <li class="nav-item">
+            <a href="{{url('machines')}}" class="nav-link">
+              <p>
+                Machines
+              </p>
+            </a>
+          </li>
+
+            
+
+          <li class="nav-item">
+            <a href="{{url('machine-category')}}" class="nav-link">
+              <p>
+                Machine Category
+              </p>
+            </a>
+            </li>
+
+          <li class="nav-item">
             <a href="{{url('admin-logout')}}" class="nav-link">
               <p>
                 Logout

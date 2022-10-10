@@ -10,6 +10,6 @@ class Product extends Model
     use HasFactory;
     
     protected $fillable=[
-        'name','image','description','price','owner_id'
+        'machine_category','model','city','manufactured_year','serial_no','reg_no','fuel_type','owner_id','invoice'
     ];
 }

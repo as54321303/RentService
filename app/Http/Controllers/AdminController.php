@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Admin;
 use App\Models\Owner;
 use App\Models\User;
+use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -69,4 +71,31 @@ class AdminController extends Controller
         $users=User::orderBy('id','desc')->get();
         return view('admin.pages.users.index',compact('users'));
     }
+
+
+    public function machines()
+    {
+        $machines=Product::join('machine_category','products.machine_category','=','machine_category.id')
+        ->join('images','products.id','=','images.product_id')->orderBy('products.id','desc')->get();
+
+        return view('admin.pages.machines.index',compact('machines'));
+    }
+
+    public function machine_category()
+    {
+
+        $machine_category=DB::table('machine_category')->get();
+
+        return view('admin.pages.machine_category',compact('machine_category'));
+
+    }
+
+    public function view_machine($id)
+    {
+        $machine_id=$id;
+        $machines=Product::where('id',$machine_id)->get();
+        return view('admin.pages.machines.view_machine');
+
+    }
+
 }

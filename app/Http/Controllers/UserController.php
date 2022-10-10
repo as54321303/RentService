@@ -17,7 +17,7 @@ use Stripe;
 class UserController extends Controller
 {
 
-    public function user()
+    public static function user()
     {
         $user_id=session('userId');
 

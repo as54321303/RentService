@@ -14,7 +14,7 @@
                         <p class="mt-3 pe-lg-5">{{$product_detail[0]->description}}</p>
                         <div class="w3banner-content-btns">
                             <a href="{{url('add-cart-session',$product_detail[0]->id)}}" class="btn btn-style btn-primary mt-lg-5 mt-4 me-2">Add to cart</a>
-                            <a href="contact.html" class="btn btn-style btn-outline-dark mt-lg-5 mt-4">$    {{$product_detail[0]->price}}</a>
+                            <a href="#" class="btn btn-style btn-outline-dark mt-lg-5 mt-4">$    {{$product_detail[0]->price}}</a>
                         </div>
 
                     </div>
