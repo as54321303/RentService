@@ -28,28 +28,38 @@ Route::middleware(['auth:sanctum','abilities:owner'])->group(function(){
 
     Route::post('owner/my-machines',[OwnerController::class,'my_machines']);
 
-    Route::post('owner-logout',[OwnerController::class,'owner_logout'])->middleware(['auth:sanctum','abilities:owner']);
+    Route::post('owner-logout',[OwnerController::class,'owner_logout']);
 
-    Route::post('owner-details',[OwnerController::class,'owner_details'])->middleware(['auth:sanctum','abilities:owner']);
+    Route::post('owner-details',[OwnerController::class,'owner_details']);
 
 });
 
 
 // User Routes
 
-Route::post('user-login',[UserController::class,'user_login']);
-Route::post('user-register',[UserController::class,'user_register']);
+Route::prefix('user')->group(function(){
 
-Route::get('machines',[UserController::class,'machines']);
-Route::get('add-to-cart/{id}',[UserController::class,'add_to_cart']);
 
-Route::middleware(['auth:sanctum'])->group(function(){
+    Route::post('user-login',[UserController::class,'user_login']);
+    Route::post('user-register',[UserController::class,'user_register']);
 
-    Route::post('user-logout',[UserController::class,'user_logout']);
-    Route::post('user-details',[UserController::class,'user_details']);
-    
+    Route::get('new-machines',[UserController::class,'newMachines']);
+    Route::post('search-machines',[UserController::class,'searchMachines']);
+
+    Route::post('filter-machine',[UserController::class,'filter_machine']);
+
+    Route::middleware(['auth:sanctum'])->group(function(){
+        Route::get('user-logout',[UserController::class,'user_logout']);
+        Route::get('user-details',[UserController::class,'user_details']);
+        Route::post('change-password',[UserController::class,'change_password']);
+        Route::post('machine-request',[UserController::class,'machine_request']);
+        
+    });
+    Route::get('categories',[UserController::class,'categories']);
+    Route::post('find-by-category',[UserController::class,'find_by_category']);
+
 });
-Route::get('categories',[UserController::class,'categories']);
-Route::post('find-by-category',[UserController::class,'find_by_category']);
+
+
 
 

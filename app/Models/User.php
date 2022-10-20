@@ -20,7 +20,13 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'contact',
         'password',
+        'otp',
+        'bName',
+        'city',
+        'bAddress',
+        'pAddress'
     ];
 
     protected $guard='front_user';
