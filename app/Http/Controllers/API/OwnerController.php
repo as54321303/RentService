@@ -229,18 +229,22 @@ class OwnerController extends Controller
           $owner_id=Auth::user()->id;
 
           if($request->file('invoice')){ 
-           $invoice = time().'.'.$request->invoice->extension();
+           $invoice =$request->invoice->getClientOriginalName();
            $request->invoice->move(public_path('products/invoice'),$invoice);
            $product_invoice=url('public/products/invoice').'/'.$invoice;
            }
 
            if($request->file('id_proof')){
 
-            $id_proof=time().'.'.$request->id_proof->extension();
+            $id_proof=$request->id_proof->getClientOriginalName();
             $request->id_proof->move(public_path('products/id_proof'),$id_proof);
             $id_proof=url('public/products/id_proof').'/'.$id_proof;
 
            }
+
+
+           $features= implode(',,',$request->features);
+           $applications=implode(',,',$request->applications);
 
 
            $id=DB::table('machines')->insertGetId(array(
@@ -260,8 +264,13 @@ class OwnerController extends Controller
                 'insurance'=>$request->insurance,
                 'capacity'=>$request->capacity,
                 'id_proof'=>$id_proof,
+                'features'=>$features,
+                'applications'=>$applications,
                 
            ));
+
+
+
 
 
            if($id){
@@ -320,19 +329,13 @@ class OwnerController extends Controller
                 ],200);
 
 
-
-
                }
-
 
 
     }
 
 
     
-
-
-
 
     public function my_machines()
     {
@@ -349,9 +352,6 @@ class OwnerController extends Controller
 
 
 
-
-    
-
     public function owner_logout()
     {
         auth()->user()->tokens()->delete();
@@ -365,8 +365,12 @@ class OwnerController extends Controller
 
 
 
-    public function machine_request()
+    public function requestedMachine()
     {
+
+        $ownerId=auth()->user()->id;
+        return $ownerId;
+
         
     } 
 }

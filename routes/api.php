@@ -32,6 +32,8 @@ Route::middleware(['auth:sanctum','abilities:owner'])->group(function(){
 
     Route::post('owner-details',[OwnerController::class,'owner_details']);
 
+    Route::get('requested-machine',[OwnerController::class,'requestedMachine']);
+
 });
 
 
@@ -43,6 +45,8 @@ Route::prefix('user')->group(function(){
     Route::post('user-login',[UserController::class,'user_login']);
     Route::post('user-register',[UserController::class,'user_register']);
 
+    Route::post('send-mail',[UserController::class,'sendMail']);
+
     Route::get('new-machines',[UserController::class,'newMachines']);
     Route::post('search-machines',[UserController::class,'searchMachines']);
 
@@ -53,7 +57,11 @@ Route::prefix('user')->group(function(){
         Route::get('user-details',[UserController::class,'user_details']);
         Route::post('change-password',[UserController::class,'change_password']);
         Route::post('machine-request',[UserController::class,'machine_request']);
-        
+        Route::post('calculate-price',[UserController::class,'calculatePrice']);
+        Route::post('take-on-rent',[UserController::class,'takeOnRent']);
+        Route::get('on-rent',[UserController::class,'onRent']);
+        Route::get('completed-rent-period',[UserController::class,'completedRentPeriod']);
+        Route::get('complain',[UserController::class,'complain']);
     });
     Route::get('categories',[UserController::class,'categories']);
     Route::post('find-by-category',[UserController::class,'find_by_category']);

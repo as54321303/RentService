@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Validator;
 use Auth;
+use Mail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -370,17 +371,19 @@ class UserController extends Controller
         public function machine_request(Request $request)
         {
 
+          $userId=auth()->user()->id;
+
+
          $id= DB::table('machine_request')->insert([
 
 
-            'user_id'=>$user_id,
+            'user_id'=>$userId,
             'machine_id'=>$request->machine_id,
             'rent_from'=>$request->rent_from,
             'rent_to'=>$request->rent_to,
             'price'=>$request->price,
             'on_basis'=>$request->on_basis,
             'delivery_address'=>$request->delivery_address,
-
 
 
           ]);
@@ -403,9 +406,198 @@ class UserController extends Controller
 
           }
 
+        }
+
+        public function calculatePrice(Request $request)
+        {
+
+          $number=$request->number;
+
+          $userCity=$request->city;
+          $sourceCity=DB::table('cities')->where('city','=',$userCity)->first();
+
+
+          $machineCity=Machine::where('id','=',$request->machineId)->first();
+          $destinyCity=DB::table('cities')->where('city',$machineCity->city)->first();
+          
+          $lat1=$sourceCity->lat;
+          $long1=$sourceCity->lng;
+
+          $lat2=$destinyCity->lat;
+          $long2=$destinyCity->lng;
+
+
+          $theta = $long1 - $long2;
+          $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+          $dist = acos($dist);
+          $dist = rad2deg($dist);
+          $distance = floor($dist * 60 * 1.1515);
+
+          $price=array();
+
+          $onBasis=$request->onBasis;
+          $machinePrice=DB::table('machine_prices')->where('machine_id',$request->machineId)->where('on_basis',$onBasis)->first();
+          
+          $transportationCharge=$distance*intval($machinePrice->transportation_charge);
+
+          $totalPrice=$transportationCharge+($machinePrice->price)*$number;
+
+          $obj=new \StdClass;
+          $obj->totalPrice=$totalPrice;
+          $obj->transportationCharge=$transportationCharge;
+          
+
+    
+
+          array_push($price,$obj);
+
+          return response()->json([
+            'response_message'=>'Ok',
+            'response_code'=>200,
+            'data'=>$price,
+          ],200);
+
 
 
 
         }
+
+
+        public function takeOnRent(Request $request)
+        {
+
+
+          $userId=auth()->user()->id;
+
+          $id=DB::table('on_rent')->insertGetId(array(
+
+             'userId'=>$userId,
+             'machineId'=>$request->machineId,
+             'price'=>$request->price,
+             'onBasis'=>$request->onBasis,
+             'from'=>$request->from,
+             'to'=>$request->to,
+             'deliveryAddress'=>$request->deliveryAddress,
+             'totalPrice'=>$request->totalPrice
+
+
+          ));
+
+          DB::table('machines')->update([
+
+            'onRent'=>1
+
+          ]);
+
+           if($id)
+           {
+
+            return response()->json([
+              'response_message'=>'Ok',
+              'response_code'=>200,
+            ],200);
+
+           }
+
+           else{
+
+            return response()->json([
+              'response_message'=>'Some Error Occured!',
+              'response_code'=>404,
+            ],404);
+
+
+           }
+
+        }
+
+
+        public function sendMail(Request $request)
+        {
+
+          $email= $request->email;
+
+          $otp = rand(1000,9000);
+          $data = ["email" => $email, "otp" => $otp];
+          $user['to'] = $email;
+          $success = Mail::send('mail', $data, function ($message) use ($user) { 
+              $message->to($user['to']);            
+              $message->subject('Forgot password');        
+              
+              });	
+
+              return "Otp Send";
+
+        }
+
+        public function completedRentPeriod()
+        {
+            $userId=auth()->user()->id;
+            $machines=DB::table('on_rent')->where('userId',$userId)->where('on_rent.rentCompleted',1)
+            ->join('machines','on_rent.machineId','=','machines.id')->get();
+
+            return response()->json([
+              'response_message'=>'Ok',
+              'response_code'=>200,
+              'data'=>$machines,
+            ],200);
+
+        }
+
+
+        public function onRent()
+        {
+            $userId=auth()->user()->id;
+            $machines=DB::table('on_rent')->where('userId',$userId)->where('on_rent.rentCompleted',0)
+            ->join('machines','on_rent.machineId','=','machines.id')->get();
+
+            return response()->json([
+              'response_message'=>'Ok',
+              'response_code'=>200,
+              'data'=>$machines,
+            ],200);
+
+        }
+
+        public function complain(Request $request)
+        {
+
+          $userId=auth()->user()->id;
+
+
+          if($request->file('complaintImage')){ 
+            $complaintImage =$request->complaintImage->getClientOriginalName();
+            $request->complaintImage->move(public_path('products/complaintImage'),$complaintImage);
+            $complaint_image=url('public/products/complaintImage').'/'.$complaintImage;
+            }
+
+            else{
+              $complaintImage=null;
+            }
+          
+          
+          $complain=DB::table('complaints')->insert([
+
+            'userId'=>$userId,
+            'machineId'=>$request->machineId,
+            'details'=>$request->details,
+            'userId'=>$userId,
+            'image'=>$complaint_image,
+
+          ]);
+
+          if($complain)
+          {
+            return response()->>json([
+              'response_message'=>"Complain Raised...",
+              'respponse_code'=>200,
+            ],200);
+          }
+         
+        }
+
+
+      
+
 
 }

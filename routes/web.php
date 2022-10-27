@@ -20,6 +20,8 @@ Route::get('/', function () {
 });
 
 
+Route::post('submit',[AdminController::class,'submit'])->name('submit');
+
 
 // Admin Routes
 

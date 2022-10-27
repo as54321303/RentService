@@ -18,6 +18,11 @@ class AdminController extends Controller
     }
 
 
+    public function submit(Request $request)
+    {
+        return $request->all();
+    }
+
 
     public function admin_login()
     {
