@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Admin;
 use App\Models\Owner;
 use App\Models\User;
-use App\Models\Product;
+use App\Models\Machine;
 use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
@@ -80,8 +80,8 @@ class AdminController extends Controller
 
     public function machines()
     {
-        $machines=Product::join('machine_category','products.machine_category','=','machine_category.id')
-        ->join('images','products.id','=','images.product_id')->orderBy('products.id','desc')->get();
+        $machines=Machine::join('machine_category','machines.machine_category','=','machine_category.id')
+        ->join('images','machines.id','=','images.machine_id')->orderBy('machines.id','desc')->get();
 
         return view('admin.pages.machines.index',compact('machines'));
     }
@@ -98,7 +98,7 @@ class AdminController extends Controller
     public function view_machine($id)
     {
         $machine_id=$id;
-        $machines=Product::where('id',$machine_id)->get();
+        $machines=Machine::where('id',$machine_id)->get();
         return view('admin.pages.machines.view_machine');
 
     }

@@ -14,7 +14,11 @@ class Owner extends Authenticatable
         'name',
         'email',
         'password',
-        'contact'
+        'contact',
+        'bName',
+        'city',
+        'bAddress',
+        'pAddress',
     ];
 
     protected $guard='owners';

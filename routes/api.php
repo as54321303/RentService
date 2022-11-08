@@ -18,23 +18,36 @@ use App\Http\Controllers\API\UserController;
 
 // Owner Routes
 
-Route::post('owner-login',[OwnerController::class,'owner_login']);
-Route::post('owner-register',[OwnerController::class,'owner_register']);
+
+Route::prefix('owner')->group(function(){
 
 
-Route::middleware(['auth:sanctum','abilities:owner'])->group(function(){
+    Route::post('login',[OwnerController::class,'login']);
+    Route::post('google-login',[OwnerController::class,'googleLogin']);
+    Route::post('register',[OwnerController::class,'register']);
 
-    Route::post('owner/add-machine',[OwnerController::class,'add_machine']);
 
-    Route::post('owner/my-machines',[OwnerController::class,'my_machines']);
+            Route::middleware(['auth:sanctum','abilities:owner'])->group(function(){
 
-    Route::post('owner-logout',[OwnerController::class,'owner_logout']);
+                Route::post('add-machine',[OwnerController::class,'addMachine']);
 
-    Route::post('owner-details',[OwnerController::class,'owner_details']);
+                Route::post('my-machines',[OwnerController::class,'myMachines']);
 
-    Route::get('requested-machine',[OwnerController::class,'requestedMachine']);
+                Route::post('logout',[OwnerController::class,'logout']);
+
+                Route::post('details',[OwnerController::class,'ownerDetails']);
+                Route::post('on-service-machines',[OwnerController::class,'onServiceMachines']);
+                Route::post('search-machines',[OwnerController::class,'searchMachines']);
+
+                Route::get('requested-machine',[OwnerController::class,'requestedMachine']);
+
+            });
+
+
 
 });
+
+
 
 
 // User Routes
@@ -44,8 +57,8 @@ Route::prefix('user')->group(function(){
 
     Route::post('user-login',[UserController::class,'user_login']);
     Route::post('user-register',[UserController::class,'user_register']);
+    Route::post('verify-otp',[UserController::class,'verifyOtp']);
 
-    Route::post('send-mail',[UserController::class,'sendMail']);
 
     Route::get('new-machines',[UserController::class,'newMachines']);
     Route::post('search-machines',[UserController::class,'searchMachines']);

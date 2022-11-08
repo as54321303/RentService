@@ -59,14 +59,25 @@ class UserController extends Controller
 
           ]);
 
-          $token=$user->createToken($request->email)->plainTextToken;
+         
+          $email = $request->email;
+
+          $otp = rand(1000,9000);
+          $insertOTP = User::where('id', $user->id)->update(["otp" => $otp]);
+          $data = ["email" => $email, "otp" => $otp];
+          $user['to'] = $email;
+          $success = Mail::send('mail', $data, function ($message) use ($user) { 
+
+              $message->to($user['to']);            
+              $message->subject('Otp Verification');        
+              
+              });	
 
 
             return response()->json([
 
               'response_code'=>200,
-              'response_message'=>"Registration Success",
-              'token'=>$token,
+              'response_message'=>"Please, Verify otp to continue",
 
           ],200);
 
@@ -76,13 +87,43 @@ class UserController extends Controller
 
 
 
+
+        public function verifyOtp(Request $request)
+        {
+          $otp=$request->otp;
+
+          $email=$request->email;
+
+          $check=User::where('email',$email)->first();
+          
+          if($otp==$check->otp)
+          {
+            $token=$check->createToken($email)->plainTextToken;
+            return response()->json([
+              'response_message'=>"Ok",
+              'response_code'=>"200",
+              'token'=>$token,
+            ],200);
+          }
+
+          else{
+
+            return response()->json([
+              'response_message'=>"Otp not matched!",
+              'response_code'=>"401",
+            ],401);
+
+          }
+
+        }
+
     
     public function user_login(Request $request)
     {
       
         $validator = Validator::make($request->all(), [ 
 
-			     'email'=>'required',
+			      'email'=>'required',
             'password'=>'required',
   
 		  ]);
@@ -588,7 +629,7 @@ class UserController extends Controller
 
           if($complain)
           {
-            return response()->>json([
+            return response()->json([
               'response_message'=>"Complain Raised...",
               'respponse_code'=>200,
             ],200);
