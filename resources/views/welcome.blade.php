@@ -8,7 +8,7 @@
 </head>
 <body>
 
-    <form action="{{route('submit')}}" method="post">
+    <form action="{{route('submit')}}" method="post" enctype="multipart/form-data">
           @csrf
         <input type="text" name="name[]">
         <input type="text" name="name[]">

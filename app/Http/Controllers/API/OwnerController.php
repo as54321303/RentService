@@ -17,7 +17,7 @@ class OwnerController extends Controller
 
 
 
-    public function register(Request $request)
+    public function signUp(Request $request)
     {
 
         // return $request->all();
@@ -80,7 +80,7 @@ class OwnerController extends Controller
         //       $message->to($user['to']);            
         //       $message->subject('Otp Verification');        
               
-        //       });	
+        //       });	 
 
 
         //     return response()->json([
@@ -91,8 +91,162 @@ class OwnerController extends Controller
         //   ],200);
 
 
-
     }
+
+
+
+        public function changePassword(Request $request)
+        {
+
+
+            $validator = Validator::make($request->all(), [ 
+        
+                'oldPassword'=>'required',
+                'newPassword'=>'required',
+                'confirmNewPassword'=>'required|same:newPassword',
+      
+              ]);
+      
+      
+      
+               if ($validator->fails()){
+      
+                  return response()->json([ 
+    
+                          'response_code' => 401,
+                          'response_message' => $validator->errors() 
+    
+                      ],401);  
+              }
+
+            $oldPassword=$request->oldPassword;
+            $newPassword=$request->newPassword;
+
+
+            $ownerId=auth()->user()->id;
+
+            $check=Owner::where('id',$ownerId)->first();
+
+            if(Hash::check($oldPassword, $check->password))
+            {
+
+                Owner::where('id',$ownerId)->update([
+
+                    'password'=>Hash::make($newPassword),
+
+                ]);
+
+                return response()->json([
+
+                    'response_message'=>'Password changed successfully!',
+                    'response_code'=>200
+
+                ],200);
+
+
+            }
+
+            else{
+
+                return response()->json([
+
+                    'response_message'=>'Old password not matched!',
+                    'response_code'=>401
+
+                ],401);
+
+            }
+
+            
+
+        }
+
+
+
+        public function forgotPassword(Request $request)
+        {
+
+
+            
+            $validator = Validator::make($request->all(), [ 
+        
+                'email'=>'required',
+      
+              ]);
+      
+      
+      
+               if ($validator->fails()){
+      
+                  return response()->json([ 
+    
+                          'response_code' => 401,
+                          'response_message' => $validator->errors() 
+    
+                      ],401);  
+              }
+
+            
+            $email=$request->email;
+
+            $check=Owner::where('email',$email)->exists();
+
+            if($check)
+            {
+
+            $otp = rand(1000,9999);
+            $insertOTP = Owner::where('email', $email)->update(["otp" => $otp]);
+            $data = ["email" => $email, "otp" => $otp];
+            $user['to'] = "aashutosh.quantum@gmail.com";
+            $success = Mail::send('mail', $data, function ($message) use ($user) { 
+
+            $message->to($user['to']);            
+            $message->subject('Forgot Password');  
+            $message->from(env('MAIL_FROM_ADDRESS'),'Backend Dev');
+              
+           });	
+
+        //    $to_email = 'aashutosh.quantum@gmail.com';
+        //    $to_name = 'ashutosh';
+        //    $data = array('name'=>"beautylicious", 'body' => 'this is text message');
+           
+        //    $sent =  Mail::send('mail', $data, function($message) use ($to_name, $to_email) {
+        //    $message->to($to_email, $to_name)
+        //    ->subject('Test Mail');
+        //    $message->from(env('MAIL_FROM_ADDRESS'),'Backend Dev');
+        //    });
+        //    // dd($sent);
+        //   return 'Email sent Successfully';
+
+        //    $data = ["email" => $email, "otp" => $otp];
+        // $user['to'] = $email;
+        // $success = Mail::send('admin.mail', $data, function ($message) use ($user) {
+        //     $message->to($user['to']);
+        //     $message->subject('Forgot password');
+        // });
+
+
+            return response()->json([
+
+                'response_code'=>200,
+                'response_message'=>"Please, Verify otp to continue",
+
+            ],200);
+
+
+
+            }
+
+            else{
+                return response()->json([
+
+                    'response_message'=>'Email is not registered!',
+                    'response_code'=>404,
+
+                ],404);
+            }
+
+        }
 
 
 
@@ -228,8 +382,14 @@ class OwnerController extends Controller
     }
 
 
-    public function states()
+    public function city()
     {
+        $cities=DB::table('cities')->get(['id','city']);
+        return response()->json([
+            'response_message'=>'Ok',
+            'response_code'=>200,
+            'data'=>$cities
+        ],200);
         
     }
 
@@ -422,6 +582,25 @@ class OwnerController extends Controller
     }
 
 
+    public function machineDetails(Request $request)
+    {
+        $machineArray=array();
+        $machineId=$request->machineId;
+        $images=DB::table('images')->where('machine_id',$machineId)->get('image');
+        // return $images;
+        $details=Machine::where('machines.id',$machineId)->join('machine_prices','machines.id','=','machine_prices.machine_id')->first();
+         $obj=new \StdClass;
+        
+         $obj->details=$details;
+         $obj->images=$images;
+         array_push($machineArray,$obj);
+
+          return response()->json([
+            'response_message'=>'Ok',
+            'response_code'=>'200',
+          ],200);
+    }
+
 
     public function logout()
     {
@@ -458,6 +637,21 @@ class OwnerController extends Controller
             'response_code'=>200,
             'data'=>$machines
         ],200);
+    }
+
+
+    public function rentPeriodCompleted()
+    {
+        $ownerId=auth()->user()->id;
+        $machines=Machine::where('owner_id',$ownerId)->where('onRent',0)->join('on_rent','machines.id','=','on_rent.machineId')
+        ->where('on_rent.rentCompleted',1)->get();
+
+        return response()->json([
+            'response_message'=>'Ok',
+            'response_code'=>200,
+            'data'=>$machines
+        ],200);
+
     }
 
   public function searchMachine(Request $request)
